@@ -8,18 +8,20 @@
 
 import { events } from './modules/core/event-emitter/event-emitter';
 import { Awareness } from './modules/awareness';
+import { Reasoning } from './modules/reasoning';
 
-const AUTONOMY_ENABLED = true;
+const AUTONOMY_ENABLED = false;
 const REASONING_ENABLED = true;
-const IMPROVEMENT_ENABLED = true;
+const IMPROVEMENT_ENABLED = false;
 const AWARENESS_ENABLED = true;
-const SELF_ENABLED = true;
+const SELF_ENABLED = false;
 
 if (AUTONOMY_ENABLED) {
   events.emit('autonomy:enabled');
 }
 
 if (REASONING_ENABLED) {
+  new Reasoning(events).registerEvents();
   events.emit('reasoning:enabled');
 }
 

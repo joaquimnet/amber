@@ -1,0 +1,25 @@
+request.weather give me the weather
+request.weather give me the weather like
+request.weather give me the weather today
+request.weather give me the weather like today
+request.weather give me the temperature
+request.weather show me weather
+request.weather show me weather like
+request.weather show me weather today
+request.weather show me weather like today
+request.weather show me temperature
+request.weather what's the weather
+request.weather what's the weather like
+request.weather what's the weather today
+request.weather what's the weather like today
+request.weather what's the temperature
+request.weather what is the weather
+request.weather what is the weather like
+request.weather what is the weather today
+request.weather what is the weather like today
+request.weather what is the temperature
+request.weather tell me weather
+request.weather tell me weather like
+request.weather tell me weather today
+request.weather tell me weather like today
+request.weather tell me temperature
