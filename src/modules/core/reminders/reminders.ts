@@ -33,14 +33,6 @@ class ReminderHandler {
         forwardDate: true,
       });
 
-      const eee = await openAIClient.systemCompletion([
-        {
-          role: OpenAIRoles.SYSTEM,
-          content: `Parse this message and return the reminder in the JSON format {"reminder": "..", "date": ".."}`,
-        },
-      ]);
-      console.log('eee: ', eee);
-
       const reminder = message.content.toLowerCase().substring(message.content.indexOf('to') + 2);
 
       await this.addReminder(message.author.id, message.guild!.id, message.channel.id, reminder, fireDate);
