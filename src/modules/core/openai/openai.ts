@@ -16,10 +16,25 @@ const CHAT_CONTEXT = [
   },
 ];
 
+interface OpenAIChatCompletionAPIResponse {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    index: number;
+    message: {
+      role: OpenAIRoles;
+      content: string;
+    };
+    finish_reason: string;
+  }[];
+}
+
 export class OpenAIClient {
   constructor(private key: string) {}
 
-  async chatCompletion(messages: OpenAIMessages, isConversational = false) {
+  async chatCompletion(messages: OpenAIMessages, isConversational = false): Promise<OpenAIChatCompletionAPIResponse> {
     const temperature = 1.3;
     const howManyChoicesToGenerate = 1;
     const maxTokens = 400;

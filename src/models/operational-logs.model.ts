@@ -4,6 +4,8 @@ export interface IOperationalLog {
   type: string;
   message?: string;
   meta: any;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const operationalLogsSchema = new Schema<IOperationalLog>(

@@ -11,3 +11,4 @@
 
 export * from './operational-logs.model';
 export * from './user-interactions.model';
+export * from './reminders.model';
