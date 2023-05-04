@@ -25,3 +25,10 @@ export const github = {
 export const wakatime = {
   WAKATIME_API_KEY: process.env['WAKATIME_API_KEY']!,
 };
+
+export const hanako = {
+  HANAKO_SERVER: process.env['HANAKO_SERVER']!,
+  HANAKO_ENVIRONMENT: process.env['HANAKO_ENVIRONMENT']!,
+  HANAKO_APP: process.env['HANAKO_APP']!,
+  HANAKO_API_KEY: process.env['HANAKO_API_KEY']!,
+};

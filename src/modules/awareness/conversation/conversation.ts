@@ -22,27 +22,27 @@ function getContext(userId: string) {
 
 export function registerConversationEvents() {
   events.on('awareness:enabled', () => {
-    events.on('awareness:conversation:add', async (userId: string, messages: ContextMessage[]) => {
-      console.log('awareness:conversation:add');
+    events.on(
+      'awareness:conversation:add',
+      async (userId: string, messages: ContextMessage[]) => {
+        const context = getContext(userId);
 
-      const context = getContext(userId);
+        await context.addMessages(messages);
 
-      await context.addMessages(messages);
-
-      // cull messages old messages and keep the context token count low
-      contextAgeCull(context);
-      contextLengthCull(context);
-    }, { promisify: true });
+        // cull messages old messages and keep the context token count low
+        contextAgeCull(context);
+        contextLengthCull(context);
+      },
+      { promisify: true },
+    );
 
     events.on('awareness:conversation:end', (userId: string) => {
-      console.log('awareness:conversation:end');
       conversationContexts.delete(userId);
     });
 
     events.on(
       'awareness:conversation:getContext:*',
       async (userId: string) => {
-        console.log('awareness:conversation:getContext');
         return getContext(userId);
       },
       { promisify: true },
@@ -51,7 +51,6 @@ export function registerConversationEvents() {
     events.on(
       'awareness:conversation:respond',
       async (payload: { userId: string; context: ConversationContext; channel: TextChannel }) => {
-        console.log('awareness:conversation:respond');
         const { userId, context, channel } = payload;
 
         const response = await openAIClient.chatCompletion(context.formatForOpenAI(), userId, true);

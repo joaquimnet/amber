@@ -37,6 +37,7 @@
     "discord.js": "^14.10.2",
     "dotenv": "^16.0.3",
     "eventemitter2": "^6.4.9",
+    "hanako": "^0.3.0",
     "intent-utterance-generator": "^0.0.2",
     "mongoose": "^7.1.0",
     "node-cron": "^3.0.2",

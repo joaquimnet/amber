@@ -21,7 +21,6 @@ function calculateNewCooldownTimestamp(cooldown: number) {
 
 export async function registerAutonomousUtterancesEvents() {
   events.on('cron:minute', async () => {
-    console.log('cron:minute');
     const now = Date.now();
     for (const utterance of allUtterances) {
       const cooldown = AutonomousUtterancesCooldowns.get(utterance.getId());
@@ -39,7 +38,6 @@ export async function registerAutonomousUtterancesEvents() {
   });
 
   events.on('autonomy:utterance', async (utteranceId: string, message: string) => {
-    console.log('autonomy:utterance');
     const channel = bot.guilds.cache.get(ember.UTTERANCES_GUILD)?.channels.cache.get(ember.UTTERANCES_CHANNEL);
     if (channel instanceof TextChannel) {
       const messages = splitMessage(message);

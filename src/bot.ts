@@ -6,6 +6,7 @@ import './modules/discord/commands';
 import './modules/core/reminders/reminders';
 import { resolveIntent } from './modules/awareness/intent/resolve-intent';
 import { ConversationCommand } from './modules/discord/commands/conversation-command';
+import { logger } from './log';
 
 const bot = new Client({
   partials: [
@@ -35,7 +36,7 @@ const bot = new Client({
 });
 
 bot.once(Events.ClientReady, (c) => {
-  console.log(`Ready! Logged in as ${c.user.tag}`);
+  logger.info(`Ready! Logged in as ${c.user.tag}`);
 });
 
 bot.on(Events.MessageCreate, async (message) => {
@@ -50,7 +51,6 @@ bot.on(Events.MessageCreate, async (message) => {
 
   // Known Intents
   const intent = await resolveIntent(message);
-  console.log('intent: ', intent);
 
   if (intent && !(intent instanceof ConversationCommand)) {
     events.emit('awareness:intent:' + intent, message);

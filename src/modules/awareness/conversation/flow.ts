@@ -5,6 +5,9 @@ import { EmberConversationRoles } from './types';
 import { OperationalLog } from '../../../models';
 import { ConversationCommand } from '../../discord/commands/conversation-command';
 
+const emberNamesAndNicknames = ['ember', 'embs', 'emby', 'em', 'embsy'];
+const nicknameRegex = new RegExp(`\\b(${emberNamesAndNicknames.join('|')})\\b`, 'gi');
+
 events.on(
   'awareness:conversation:flow:handle-conversation',
   async (message: Message, conversationCommand?: ConversationCommand) => {
@@ -45,8 +48,8 @@ events.on(
         return ctx[0];
       });
 
-    const isCallingEmber = message.content.toLowerCase().match(/\b(ember|embs)\b/);
-    const isDismissingEmber = message.content.toLowerCase().match(/\b(bye|see you later) (ember|embs)\b/);
+    const isCallingEmber = nicknameRegex.test(message.content);
+    const isDismissingEmber = message.content.toLowerCase().match(/\b(bye|see you later) (ember|embs)\b/gi);
     const hasExistingConversation = context.messages.length > 0;
 
     if (hasExistingConversation && isDismissingEmber) {

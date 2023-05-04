@@ -2,6 +2,7 @@ import axios from 'axios';
 import { OpenAIRoles } from '../../awareness/conversation';
 import { OPENAI_KEY } from '../../../config';
 import { EMBER_MASTER_CONTEXT } from '../../../ember';
+import { logger } from '../../../log';
 
 export type OpenAIMessages = { role: OpenAIRoles; content: string }[];
 
@@ -38,14 +39,15 @@ export class OpenAIClient {
 
     if (userId && userId === '517599684961894400') {
       systemContext.push({
-        role: 'system',
+        role: OpenAIRoles.SYSTEM,
+        // TODO: this is not healthy, remove it
         content: process.env['FORBIDDEN_CONTEXT']!,
       });
     }
 
     if (isConversational) {
       systemContext.push({
-        role: 'system',
+        role: OpenAIRoles.SYSTEM,
         content: 'You are having a conversation with the user. Keep the answers short and simple.',
       });
     }
@@ -70,6 +72,7 @@ export class OpenAIClient {
           },
         },
       );
+      logger.info('OpenAI Request (chat)', { meta: response.data });
       return response.data;
     } catch (err: any) {
       console.log('err.response.data: ', err.response.data);
@@ -104,7 +107,7 @@ export class OpenAIClient {
           },
         },
       );
-      console.log('response.data: ', response.data);
+      logger.info('OpenAI Request (instruction)', { meta: response.data });
       return response.data.choices[0].message.content;
     } catch (err: any) {
       console.log('err.response.data: ', err.response.data);
@@ -140,6 +143,7 @@ export class OpenAIClient {
           },
         },
       );
+      logger.info('OpenAI Request (system)', { meta: response.data });
       return response.data;
     } catch (err: any) {
       throw err.response.data;

@@ -33,14 +33,22 @@ class GithubService {
       owner,
       repo: repository,
       since: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      per_page: 999,
+      per_page: 20,
     });
 
     return data;
   }
 
   async getCommitsLast24HoursForAllRepos() {
-    const repositories = await this.readRepositories();
+    let repositories = await this.readRepositories();
+
+    repositories = repositories.filter((r: any) => {
+      const lastPushed = new Date(r.pushed_at);
+      const now = new Date();
+      const diff = now.getTime() - lastPushed.getTime();
+      const diffHours = diff / (1000 * 3600);
+      return diffHours < 24;
+    });
 
     const commits = await Promise.all(
       repositories.map(async (repository) => {
@@ -58,6 +66,7 @@ class GithubService {
                 commits: [],
               };
             }
+            console.log('err: ', err);
           });
         return repositoryCommits;
       }),
