@@ -5,6 +5,7 @@ import { contextAgeCull, contextLengthCull } from './constraints';
 import { ConversationContext, ContextMessage } from './context';
 import { EmberConversationRoles } from './types';
 import { splitMessage } from '../../core/util/discord';
+import { IUserInteraction } from '../../../models';
 
 const conversationContexts = new Map<string, ConversationContext>();
 
@@ -68,6 +69,15 @@ export function registerConversationEvents() {
             content: responseText,
           },
         ]);
+      },
+      { promisify: true },
+    );
+
+    events.on(
+      'awareness:conversation:remember',
+      async (userId: string, interaction: IUserInteraction) => {
+        const context = getContext(userId);
+        await context.rememberPreviousConversation(interaction);
       },
       { promisify: true },
     );

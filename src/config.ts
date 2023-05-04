@@ -10,7 +10,7 @@ export const discord = {
 
 export const conversation = {
   MAX_TOTAL_CHARACTER_LENGTH: 2000,
-  MAX_AGE: 30,
+  MAX_AGE: 5,
 };
 
 export const ember = {

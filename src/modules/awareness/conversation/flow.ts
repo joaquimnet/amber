@@ -50,7 +50,8 @@ events.on(
 
     const isCallingEmber = nicknameRegex.test(message.content);
     const isDismissingEmber = message.content.toLowerCase().match(/\b(bye|see you later) (ember|embs)\b/gi);
-    const hasExistingConversation = context.messages.length > 0;
+    const hasExistingConversation =
+      context.messages.filter((m) => m.author !== EmberConversationRoles.SYSTEM).length > 0;
 
     if (hasExistingConversation && isDismissingEmber) {
       events.emit('awareness:conversation:flow:dismiss', message);

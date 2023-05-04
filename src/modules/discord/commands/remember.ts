@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
 import { UserInteraction } from '../../../models';
+import { events } from '../../core/event-emitter/event-emitter';
 
 class RememberCommand extends Command {
   constructor() {
@@ -8,25 +9,13 @@ class RememberCommand extends Command {
   }
 
   async execute(message: Message, args: string) {
-    const conversations = await UserInteraction.find(
-      { $text: { $search: args }, userId: message.author.id },
-      { score: { $meta: 'textScore' } },
-    ).sort({
-      score: { $meta: 'textScore' },
-    });
+    const conversation = await UserInteraction.findOne({ _id: args.trim() });
 
-    for (const conversation of conversations) {
-      let formattedConversation = '';
-      for (const msg of conversation.context) {
-        formattedConversation += `${msg.author}: ${msg.content}\n`;
-      }
-      const content =
-        '```\n' +
-        `(id: ${conversation._id} score: ${conversation.get('score')})` +
-        '\n' +
-        formattedConversation +
-        '\n```';
-      await message.reply(content);
+    if (conversation) {
+      await events.emitAsync('awareness:conversation:remember', message.author.id, conversation);
+      await message.react('👍');
+    } else {
+      await message.react('😕');
     }
   }
 }

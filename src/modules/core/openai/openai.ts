@@ -3,8 +3,11 @@ import { OpenAIRoles } from '../../awareness/conversation';
 import { OPENAI_KEY } from '../../../config';
 import { EMBER_MASTER_CONTEXT } from '../../../ember';
 import { logger } from '../../../log';
+import { PersonalityTrait } from '../../../models/personality-traits.model';
 
 export type OpenAIMessages = { role: OpenAIRoles; content: string }[];
+
+let emberPersonalityTraits: string;
 
 interface OpenAIChatCompletionAPIResponse {
   id: string;
@@ -35,13 +38,36 @@ export class OpenAIClient {
     const stop = '\n\n';
     const frequencyPenalty = 0.5;
 
-    const systemContext = [...EMBER_MASTER_CONTEXT];
+    if (!emberPersonalityTraits) {
+      await this.refreshPersonalityTraits();
+    }
+
+    const systemContext = [
+      ...EMBER_MASTER_CONTEXT,
+      { role: OpenAIRoles.SYSTEM, content: `The current time is: ${new Date()}` },
+      {
+        role: OpenAIRoles.SYSTEM,
+        content: `This JSON describes you and your personality: ${emberPersonalityTraits}`,
+      },
+      {
+        role: OpenAIRoles.SYSTEM,
+        content: 'Never refer to the user as "the user", always use their name if available.',
+      },
+    ];
 
     if (userId && userId === '517599684961894400') {
       systemContext.push({
         role: OpenAIRoles.SYSTEM,
         // TODO: this is not healthy, remove it
         content: process.env['FORBIDDEN_CONTEXT']!,
+      });
+    }
+
+    const userTraits = await (PersonalityTrait as any).getUserTraits(userId)?.[0]?.traits;
+    if (userTraits) {
+      systemContext.push({
+        role: OpenAIRoles.SYSTEM,
+        content: `This JSON describes extra facts you know about the user: ${JSON.stringify(userTraits)}`,
       });
     }
 
@@ -148,6 +174,11 @@ export class OpenAIClient {
     } catch (err: any) {
       throw err.response.data;
     }
+  }
+
+  private async refreshPersonalityTraits() {
+    const traits = (await (PersonalityTrait as any).getUserTraits('ember'))[0]?.traits as Record<string, string[]>;
+    emberPersonalityTraits = JSON.stringify(traits);
   }
 }
 

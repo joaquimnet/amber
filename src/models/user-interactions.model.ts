@@ -12,6 +12,8 @@ export interface IUserInteraction {
   contextId: string;
   summary?: string;
   meta: any;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const userInteractionSchema = new Schema<IUserInteraction>(

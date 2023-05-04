@@ -1,4 +1,5 @@
-import { UserInteraction } from '../../../models';
+import { IUserInteraction, UserInteraction } from '../../../models';
+import { events } from '../../core/event-emitter/event-emitter';
 import { EmberConversationRoles, OpenAIRoles } from './types';
 import { Types } from 'mongoose';
 
@@ -43,6 +44,27 @@ export class ConversationContext {
         content: m.content,
       };
     });
+  }
+
+  async rememberPreviousConversation(interaction: IUserInteraction) {
+    let summary = '';
+    let date = new Date();
+    if (interaction.summary) {
+      summary = interaction.summary;
+      date = interaction.updatedAt!;
+    } else {
+      summary = (await events.emitAsync('conversation:context:summarize', this.userId, interaction.context))[0];
+      interaction.summary = summary;
+      await (interaction as any).save();
+    }
+
+    this.messages.unshift(
+      new ContextMessage(
+        EmberConversationRoles.SYSTEM,
+        `This is the summary of a previous conversation you had with the user on ${date}:\n\n${summary}`,
+        new Date(),
+      ),
+    );
   }
 
   private authorToRole(author: EmberConversationRoles): OpenAIRoles {

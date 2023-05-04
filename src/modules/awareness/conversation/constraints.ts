@@ -1,4 +1,5 @@
 import { conversation } from '../../../config';
+import { logger } from '../../../log';
 import { ConversationContext } from './context';
 
 export function contextLengthCull(context: ConversationContext) {
@@ -25,5 +26,15 @@ export function contextAgeCull(context: ConversationContext) {
   const now = new Date();
   const maxAgeDate = new Date(now.getTime() - conversation.MAX_AGE * 60000);
 
-  context.messages = context.messages.filter((m) => m.timestamp > maxAgeDate);
+  const latestMessage = context.messages[context.messages.length - 1];
+
+  if (latestMessage.timestamp < maxAgeDate) {
+    logger.info(`Culling conversation context for user ${context.userId}.`, {
+      meta: {
+        userId: context.userId,
+      },
+    });
+
+    context.reset();
+  }
 }
