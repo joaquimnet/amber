@@ -54,7 +54,7 @@ export function registerConversationEvents() {
         console.log('awareness:conversation:respond');
         const { userId, context, channel } = payload;
 
-        const response = await openAIClient.chatCompletion(context.formatForOpenAI(), true);
+        const response = await openAIClient.chatCompletion(context.formatForOpenAI(), userId, true);
 
         const responseText = response.choices[0].message.content;
 

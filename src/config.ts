@@ -17,3 +17,11 @@ export const ember = {
   UTTERANCES_GUILD: '683463960501944327',
   UTTERANCES_CHANNEL: '1102818884257599518',
 };
+
+export const github = {
+  GITHUB_TOKEN: process.env['GITHUB_TOKEN']!,
+};
+
+export const wakatime = {
+  WAKATIME_API_KEY: process.env['WAKATIME_API_KEY']!,
+};

@@ -10,6 +10,7 @@ export interface IUserInteraction {
   userId: string;
   context: IContextMessage[];
   contextId: string;
+  summary?: string;
   meta: any;
 }
 
@@ -33,6 +34,10 @@ const userInteractionSchema = new Schema<IUserInteraction>(
       type: String,
       required: true,
     },
+    summary: {
+      type: String,
+      required: false,
+    },
     meta: {
       type: Object,
       required: false,
@@ -44,7 +49,7 @@ const userInteractionSchema = new Schema<IUserInteraction>(
 );
 
 // context text index
-userInteractionSchema.index({ 'context.content': 'text' });
+userInteractionSchema.index({ 'context.content': 'text', summary: 'text' });
 
 export interface UserInteractionDocument extends IUserInteraction, Document {}
 

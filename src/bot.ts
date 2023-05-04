@@ -5,6 +5,7 @@ import { events } from './modules/core/event-emitter/event-emitter';
 import './modules/discord/commands';
 import './modules/core/reminders/reminders';
 import { resolveIntent } from './modules/awareness/intent/resolve-intent';
+import { ConversationCommand } from './modules/discord/commands/conversation-command';
 
 const bot = new Client({
   partials: [
@@ -51,13 +52,13 @@ bot.on(Events.MessageCreate, async (message) => {
   const intent = await resolveIntent(message);
   console.log('intent: ', intent);
 
-  if (intent) {
+  if (intent && !(intent instanceof ConversationCommand)) {
     events.emit('awareness:intent:' + intent, message);
     return;
   }
 
   // Conversation
-  events.emit('awareness:conversation:flow:handle-conversation', message);
+  events.emit('awareness:conversation:flow:handle-conversation', message, intent as ConversationCommand);
 });
 
 bot.login(discord.token);

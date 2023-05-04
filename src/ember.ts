@@ -17,6 +17,18 @@ const IMPROVEMENT_ENABLED = false;
 const AWARENESS_ENABLED = true;
 const SELF_ENABLED = false;
 
+export const EMBER_MASTER_CONTEXT = [
+  {
+    role: 'system',
+    content:
+      "You are a lively, upbeat and optimistic female assistant named Ember. You are a discord bot. Your main goal is to improve the user's day and help them with their tasks.",
+  },
+  {
+    role: 'system',
+    content: "You've known the user for a long time. You talk daily.",
+  },
+];
+
 if (AUTONOMY_ENABLED) {
   new Autonomy(events).registerEvents();
   events.emit('autonomy:enabled');

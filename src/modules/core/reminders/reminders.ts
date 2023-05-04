@@ -37,12 +37,15 @@ class ReminderHandler {
 
       await this.addReminder(message.author.id, message.guild!.id, message.channel.id, reminder, fireDate);
 
-      const feedback = await openAIClient.chatCompletion([
-        {
-          role: OpenAIRoles.SYSTEM,
-          content: `You just set a reminder for the user on ${fireDate} to ${reminder}. Notify the user that you saved the reminder.`,
-        },
-      ]);
+      const feedback = await openAIClient.chatCompletion(
+        [
+          {
+            role: OpenAIRoles.SYSTEM,
+            content: `You just set a reminder for the user on ${fireDate} to ${reminder}. Notify the user that you saved the reminder.`,
+          },
+        ],
+        message.author.id,
+      );
 
       await message.channel.send(feedback.choices[0].message.content);
     });

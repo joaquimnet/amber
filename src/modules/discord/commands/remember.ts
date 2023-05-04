@@ -20,7 +20,12 @@ class RememberCommand extends Command {
       for (const msg of conversation.context) {
         formattedConversation += `${msg.author}: ${msg.content}\n`;
       }
-      const content = '```\n' + `(score: ${conversation.get('score')})` + '\n' + formattedConversation + '\n```';
+      const content =
+        '```\n' +
+        `(id: ${conversation._id} score: ${conversation.get('score')})` +
+        '\n' +
+        formattedConversation +
+        '\n```';
       await message.reply(content);
     }
   }

@@ -1,20 +1,9 @@
 import axios from 'axios';
 import { OpenAIRoles } from '../../awareness/conversation';
 import { OPENAI_KEY } from '../../../config';
+import { EMBER_MASTER_CONTEXT } from '../../../ember';
 
 export type OpenAIMessages = { role: OpenAIRoles; content: string }[];
-
-const CHAT_CONTEXT = [
-  {
-    role: 'system',
-    content:
-      "You are a lively, upbeat and optimistic assistant named Ember. Your main goal is to improve the user's day and help them with their tasks.",
-  },
-  {
-    role: 'system',
-    content: "You've known the user for a long time. You talk daily.",
-  },
-];
 
 interface OpenAIChatCompletionAPIResponse {
   id: string;
@@ -34,14 +23,25 @@ interface OpenAIChatCompletionAPIResponse {
 export class OpenAIClient {
   constructor(private key: string) {}
 
-  async chatCompletion(messages: OpenAIMessages, isConversational = false): Promise<OpenAIChatCompletionAPIResponse> {
+  async chatCompletion(
+    messages: OpenAIMessages,
+    userId: string,
+    isConversational = false,
+  ): Promise<OpenAIChatCompletionAPIResponse> {
     const temperature = 1.3;
     const howManyChoicesToGenerate = 1;
     const maxTokens = 400;
     const stop = '\n\n';
     const frequencyPenalty = 0.5;
 
-    const systemContext = [...CHAT_CONTEXT];
+    const systemContext = [...EMBER_MASTER_CONTEXT];
+
+    if (userId && userId === '517599684961894400') {
+      systemContext.push({
+        role: 'system',
+        content: process.env['FORBIDDEN_CONTEXT']!,
+      });
+    }
 
     if (isConversational) {
       systemContext.push({
@@ -61,7 +61,7 @@ export class OpenAIClient {
           max_tokens: maxTokens,
           // stop,
           frequency_penalty: frequencyPenalty,
-          user: 'Kaf',
+          user: userId || 'Kaf',
         },
         {
           headers: {
@@ -77,10 +77,10 @@ export class OpenAIClient {
     }
   }
 
-  async instructionOrFeedback(prompt: string) {
+  async instructionOrFeedback(prompt: string, userId?: string) {
     const temperature = 1.3;
     const howManyChoicesToGenerate = 1;
-    const maxTokens = 400;
+    const maxTokens = 800;
     const stop = '\n\n';
     const frequencyPenalty = 0.5;
 
@@ -89,13 +89,13 @@ export class OpenAIClient {
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-3.5-turbo',
-          messages: [...CHAT_CONTEXT, { role: OpenAIRoles.SYSTEM, content: prompt }],
+          messages: [...EMBER_MASTER_CONTEXT, { role: OpenAIRoles.SYSTEM, content: prompt }],
           temperature,
           n: howManyChoicesToGenerate,
           max_tokens: maxTokens,
           // stop,
           frequency_penalty: frequencyPenalty,
-          user: 'Kaf',
+          user: userId || 'Kaf',
         },
         {
           headers: {
@@ -117,6 +117,7 @@ export class OpenAIClient {
     const howManyChoicesToGenerate = 1;
     const maxTokens = 400;
     const stop = '\n\n';
+    // this helps with code generation
     const frequencyPenalty = 0;
 
     try {
