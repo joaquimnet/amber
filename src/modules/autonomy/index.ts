@@ -1,8 +1,15 @@
-import { ARIAS } from '../core/ember/arias';
-import { registerAutonomousUtterancesEvents } from './autonomous-utterances/autonomous-utterances';
+import { Module, ModuleStatus } from '../module';
 
-export class Autonomy extends ARIAS {
-  registerEvents() {
-    registerAutonomousUtterancesEvents();
+// dummy module to bar autonomy dependent submodules
+
+class AutonomyModule extends Module {
+  name = 'Autonomy';
+  status = ModuleStatus.DISABLED;
+  dependencies?: Module[] | undefined;
+
+  init() {
+    // TODO: Implement
   }
 }
+
+export default new AutonomyModule();

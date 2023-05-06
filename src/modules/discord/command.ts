@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { events } from '../core/event-emitter/event-emitter';
+import { events } from '../events';
 
 interface CommandOptions {
   name: string;

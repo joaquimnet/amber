@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
-import { expandUtterances } from '../../awareness/intent/nlp/expand-utterances';
-import { splitMessage } from '../../core/util/discord';
 import { Command } from '../command';
+import { expandUtterances } from '../../intent/nlp/expand-utterances';
+import { splitMessage } from '../../util/discord';
 
 class IntentCommand extends Command {
   constructor() {
@@ -12,7 +12,7 @@ class IntentCommand extends Command {
     const utterances = expandUtterances(args);
 
     for (const msg of splitMessage(utterances)) {
-      await message.reply(msg);
+      if (msg) await message.reply(msg);
     }
   }
 }

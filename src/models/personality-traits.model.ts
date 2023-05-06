@@ -34,39 +34,6 @@ const personalityTraitSchema = new Schema<IPersonalityTrait>(
   },
 );
 
-// static methods
-personalityTraitSchema.statics.getUserTraits = async function (userId: string) {
-  return this.aggregate([
-    {
-      $match: {
-        userId,
-      },
-    },
-    {
-      $group: {
-        _id: '$userId',
-        traits: {
-          $push: {
-            k: '$trait',
-            v: '$value',
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        userId: '$_id',
-        traits: {
-          $arrayToObject: '$traits',
-        },
-      },
-    },
-  ]);
-};
-
-export interface PersonalityTraitDocument extends IPersonalityTrait, Document {
-  getUserTraits(userId: string): Promise<{ [trait: string]: string[] }>;
-}
+export interface PersonalityTraitDocument extends IPersonalityTrait, Document {}
 
 export const PersonalityTrait = model<IPersonalityTrait>('PersonalityTrait', personalityTraitSchema);

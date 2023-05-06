@@ -1,12 +1,11 @@
 import { discord } from './config';
-
 import { Client, Events, GatewayIntentBits, Partials } from 'discord.js';
-import { events } from './modules/core/event-emitter/event-emitter';
-import './modules/discord/commands';
-import './modules/core/reminders/reminders';
-import { resolveIntent } from './modules/awareness/intent/resolve-intent';
-import { ConversationCommand } from './modules/discord/commands/conversation-command';
+import { ConversationCommand } from './modules/conversation/commands/conversation-command';
 import { logger } from './log';
+import { events } from './modules/events';
+import { resolveIntent } from './modules/intent/resolve-intent';
+import conversationFlowModule from './modules/conversation/conversation-flow-module';
+import './modules/discord/commands';
 
 const bot = new Client({
   partials: [
@@ -58,7 +57,7 @@ bot.on(Events.MessageCreate, async (message) => {
   }
 
   // Conversation
-  events.emit('awareness:conversation:flow:handle-conversation', message, intent as ConversationCommand);
+  await conversationFlowModule.handleConversation(message, intent as ConversationCommand);
 });
 
 bot.login(discord.token);

@@ -1,9 +1,8 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
 import { IUserInteraction, UserInteraction } from '../../../models';
-import { openAIClient } from '../../core/openai/openai';
-import { OpenAIRoles } from '../../awareness/conversation';
-import { splitMessage } from '../../core/util/discord';
+import { openAIService } from '../../openai/openai';
+import { splitMessage } from '../../util/discord';
 
 class SummaryCommand extends Command {
   constructor() {
@@ -33,7 +32,7 @@ class SummaryCommand extends Command {
 
     const length = dialogueDisplay.length;
 
-    const summary = await openAIClient.instructionOrFeedback(
+    const summary = await openAIService.instructionOrFeedback(
       `Summarize the conversation below in bullet points (Ember is the assistant's name):\n\n${dialogueMachine}`,
       message.author.id,
     );
@@ -41,7 +40,7 @@ class SummaryCommand extends Command {
     const msg = `**Summary:**\n\n${summary}\n\n**Original Conversation:**\n\n${dialogueDisplay}\n\n**Length:** ${length} characters`;
 
     for (const m of splitMessage(msg)) {
-      await message.channel.send(m);
+      if (m) await message.channel.send(m);
     }
   }
 }

@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
-import { openAIClient } from '../../core/openai/openai';
+import { openAIService } from '../../openai/openai';
 
 class EmberCommand extends Command {
   constructor() {
@@ -9,7 +9,7 @@ class EmberCommand extends Command {
 
   async execute(message: Message) {
     await message.channel.sendTyping();
-    const intro = await openAIClient.instructionOrFeedback(
+    const intro = await openAIService.instructionOrFeedback(
       `Introduce yourself to this user named ${message.member?.nickname || message.author.username}.`,
     );
 

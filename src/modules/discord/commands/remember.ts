@@ -1,7 +1,9 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
 import { UserInteraction } from '../../../models';
-import { events } from '../../core/event-emitter/event-emitter';
+import conversationModule from '../../conversation/conversation-module';
+
+// TODO: turn this into a ConversationCommand
 
 class RememberCommand extends Command {
   constructor() {
@@ -9,10 +11,13 @@ class RememberCommand extends Command {
   }
 
   async execute(message: Message, args: string) {
-    const conversation = await UserInteraction.findOne({ _id: args.trim() });
+    const conversation = await UserInteraction.findOne(
+      { $text: { $search: args.trim() } },
+      { score: { $meta: 'textScore' } },
+    ).sort({ score: { $meta: 'textScore' } });
 
     if (conversation) {
-      await events.emitAsync('awareness:conversation:remember', message.author.id, conversation);
+      await conversationModule.remember(message.author.id, conversation);
       await message.react('👍');
     } else {
       await message.react('😕');

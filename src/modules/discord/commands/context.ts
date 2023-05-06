@@ -1,7 +1,6 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
-import { ConversationContext } from '../../awareness/conversation';
-import { events } from '../../core/event-emitter/event-emitter';
+import conversationModule from '../../conversation/conversation-module';
 
 class ContextCommand extends Command {
   constructor() {
@@ -9,12 +8,7 @@ class ContextCommand extends Command {
   }
 
   async execute(message: Message) {
-    const context: ConversationContext = await events
-      .emitAsync('awareness:conversation:getContext:' + message.author.id, message.author.id)
-      .then((ctx) => {
-        return ctx[0];
-      });
-
+    const context = await conversationModule.getContext(message.author.id);
     console.log(context);
     await message.reply('I posted your context to the console.');
   }

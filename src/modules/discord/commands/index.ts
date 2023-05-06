@@ -8,6 +8,3 @@ import './github';
 import './wakatime';
 import './summary';
 import './trait';
-
-// conversation
-export { default as codingStatsCommand } from './coding-stats';

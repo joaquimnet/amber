@@ -1,3 +1,12 @@
+import { config } from 'dotenv';
+config();
+
+export enum Environment {
+  DEVELOPMENT = 'development',
+  PRODUCTION = 'production',
+}
+export const environment: Environment = (process.env['NODE_ENV'] as Environment) ?? Environment.DEVELOPMENT;
+
 export const OPENAI_KEY = process.env['OPENAI_KEY']!;
 
 export const database = {

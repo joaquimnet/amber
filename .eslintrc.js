@@ -14,5 +14,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    complexity: ['error', 8],
+    'max-nested-callbacks': ['error', 3],
   },
 };
