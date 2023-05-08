@@ -4,7 +4,7 @@ export function splitMessage(content: string) {
   let currentChunk = [];
   let currentChunkLength = 0;
   for (const message of messages) {
-    if (currentChunkLength + message.length > 2000) {
+    if (currentChunkLength + message.length > 1800) {
       messageChunks.push(currentChunk.join('\n'));
       currentChunk = [];
       currentChunkLength = 0;

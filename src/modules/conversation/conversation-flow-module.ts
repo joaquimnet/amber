@@ -6,8 +6,13 @@ import { events } from '../events';
 import { Module, ModuleStatus } from '../module';
 import conversationModule from './conversation-module';
 import { OpenAIRoles } from '../openai/types';
+import { bot } from '../../bot';
 
 const nicknameRegex = new RegExp(`\\b(${persona.nicknames.join('|')})\\b`, 'gi');
+const isMentioningBot = (message: Message) => message.mentions.users.has(bot.user!.id);
+const dismissalRegex = new RegExp(
+  `^(bye|goodbye|see\\s?you|catch\\s?you)\\s*(later|soon|!|\\?)*\\s*(${persona.nicknames.join('|')})*$`,
+);
 
 class ConversationFlowModule extends Module {
   name = 'ConversationFlow';
@@ -33,8 +38,8 @@ class ConversationFlowModule extends Module {
 
     const context = await conversationModule.getContext(message.author.id);
 
-    const isCallingEmber = nicknameRegex.test(message.content);
-    const isDismissingEmber = message.content.toLowerCase().match(/\b(bye|see you later|see ya)\b/gi);
+    const isCallingEmber = nicknameRegex.test(message.content) || isMentioningBot(message);
+    const isDismissingEmber = message.content.toLowerCase().match(dismissalRegex);
     const hasExistingConversation = context.messages.filter((m) => m.author !== OpenAIRoles.ASSISTANT).length > 0;
 
     if (hasExistingConversation && isDismissingEmber) {

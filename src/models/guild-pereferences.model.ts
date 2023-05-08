@@ -1,7 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 export interface IGuildPreferences {
-  _id: string;
   guildId: string;
   conversation: {
     allowedChannels: string[];

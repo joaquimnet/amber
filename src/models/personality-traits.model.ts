@@ -1,7 +1,6 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
 export interface IPersonalityTrait {
-  _id: string;
   userId: string;
   trait: string;
   value: string[];

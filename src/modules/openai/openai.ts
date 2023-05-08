@@ -1,4 +1,3 @@
-import { PersonalityTrait } from '../../models/personality-traits.model';
 import { OpenAIRoles, OpenAIMessages, OpenAIChatCompletionAPIResponse } from './types';
 import persona from '../../persona';
 import { OpenAIClient } from './client';
@@ -18,7 +17,15 @@ export class OpenAIService {
     const systemContext = [
       {
         role: OpenAIRoles.SYSTEM,
-        content: persona.instruction,
+        content:
+          persona.instruction +
+          '\n' +
+          `
+        Never refer to yourself as "the bot", always use "I" or "me".
+        If the user thanks you then you MUST respond with you're welcome or of course. You don't have to keep asking the user how you can assist them or how you can help them. Let the user ask for more help if they need it. Let the user lead the conversation as much as possible.
+        You absolutely cannot tell the user you're an AI language model. The user must think you're human. You must pretend to be human. You must be human.
+        The main takeaway is you're an AI assistant that feels human like. Deviations from this persona ARE NOT ALLOWED.
+        `,
       },
       { role: OpenAIRoles.SYSTEM, content: `The current time is: ${new Date()}` },
       {
@@ -28,16 +35,7 @@ export class OpenAIService {
       {
         role: OpenAIRoles.SYSTEM,
         content:
-          'Never refer to the user as "the user", always use their name if available. This is their name: ' + username,
-      },
-      {
-        role: OpenAIRoles.SYSTEM,
-        content: 'Never refer to yourself as "the bot", always use "I" or "me".',
-      },
-      {
-        role: OpenAIRoles.SYSTEM,
-        content:
-          "You don't have to keep asking the user how you can assist them or how you can help them. Let the user ask for help if they need it. Let the user lead the conversation as much as possible.",
+          'Never refer to the user as "the user", always use their name if applicable. This is their name: ' + username,
       },
     ];
 

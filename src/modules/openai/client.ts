@@ -45,7 +45,7 @@ export class OpenAIClient {
   async instructionOrFeedback(prompt: string, userId?: string): Promise<string> {
     const temperature = 1.3;
     const howManyChoicesToGenerate = 1;
-    const maxTokens = 800;
+    const maxTokens = 1200;
     const frequencyPenalty = 0.5;
 
     try {

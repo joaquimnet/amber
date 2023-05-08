@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { OpenAIRoles } from '../openai/types';
 import { IUserInteraction, UserInteraction } from '../../models';
 import conversation from './conversation-module';
+import persona from '../../persona';
 
 // This module is not part of the main conversation module because in the future it will have very
 // specific functionality regarding fetching the correct information from the database based on
@@ -18,11 +19,20 @@ export class ConversationContext {
   }
 
   async addMessages(messages: ContextMessage[]) {
-    this.messages = this.messages.concat(messages);
+    this.messages = this.messages.concat(this.replaceBotMentionWithBotName(messages));
 
     const currentUserInteraction = await this.findOrCreateCurrentUserInteraction(this.id);
     currentUserInteraction.context = this.messages;
     await currentUserInteraction.save();
+  }
+
+  private replaceBotMentionWithBotName(messages: ContextMessage[]) {
+    return messages.map((m) => {
+      return {
+        ...m,
+        content: m.content.replace(/<@!?\d+>/g, persona.name),
+      };
+    });
   }
 
   private async findOrCreateCurrentUserInteraction(id: string) {

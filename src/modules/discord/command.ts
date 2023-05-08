@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 import { events } from '../events';
+import { GuildPreferencesDocument } from '../../models/guild-pereferences.model';
 
 interface CommandOptions {
   name: string;
@@ -13,5 +14,5 @@ export abstract class Command {
     events.on('discord:command:' + this.name, this.execute.bind(this));
   }
 
-  abstract execute(message: Message, args: string): void;
+  abstract execute(message: Message, args: string, guildPreferences: GuildPreferencesDocument): void;
 }

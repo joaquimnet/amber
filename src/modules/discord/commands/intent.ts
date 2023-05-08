@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { Command } from '../command';
 import { expandUtterances } from '../../intent/nlp/expand-utterances';
-import { splitMessage } from '../../util/discord';
+import fs from 'fs/promises';
 
 class IntentCommand extends Command {
   constructor() {
@@ -11,9 +11,9 @@ class IntentCommand extends Command {
   async execute(message: Message, args: string) {
     const utterances = expandUtterances(args);
 
-    for (const msg of splitMessage(utterances)) {
-      if (msg) await message.reply(msg);
-    }
+    await fs.writeFile('./utterances.txt', utterances);
+
+    await message.reply('I saved the result to a file. ♥');
   }
 }
 
