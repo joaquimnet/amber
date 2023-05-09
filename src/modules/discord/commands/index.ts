@@ -9,3 +9,4 @@ import './wakatime';
 import './summary';
 import './trait';
 import './chat';
+import './instruct';

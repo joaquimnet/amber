@@ -72,7 +72,7 @@ export class OpenAIClient {
   async contextlessDavinciCompletion(prompt: string): Promise<OpenAICompletionAPIResponse> {
     const temperature = 0.8;
     const howManyChoicesToGenerate = 1;
-    const maxTokens = 400;
+    const maxTokens = 800;
     // this helps with code generation
     const frequencyPenalty = 0;
 
