@@ -100,6 +100,7 @@ class ConversationFlowModule extends Module {
       message.channel as TextChannel,
     );
     await conversationModule.conversationEnd(message.author.id);
+    await message.react('👋');
   }
 
   private async _handleAutoChat(message: Message): Promise<boolean> {

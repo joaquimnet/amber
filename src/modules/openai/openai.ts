@@ -3,7 +3,6 @@ import persona from '../../persona';
 import { OpenAIClient } from './client';
 import traits from '../traits';
 import { ModuleStatus } from '../module';
-import { environment } from '../../config';
 
 export class OpenAIService {
   private client: OpenAIClient = new OpenAIClient();
@@ -37,15 +36,12 @@ export class OpenAIService {
         content:
           'Never refer to the user as "the user", always use their name if applicable. This is their name: ' + username,
       },
-    ];
-
-    if (userId && userId === '517599684961894400' && environment === 'production') {
-      systemContext.push({
+      {
         role: OpenAIRoles.SYSTEM,
-        // TODO: this is not healthy, remove it
-        content: process.env['FORBIDDEN_CONTEXT']!,
-      });
-    }
+        content:
+          "The system is built as to allow you keep the context of your conversation so if you need more information don't be afraid to ask follow up question or prompt the user for more information.",
+      },
+    ];
 
     if (traits.status === ModuleStatus.ENABLED) {
       const userTraits = traits.getUserTraits(userId);

@@ -1,13 +1,20 @@
 import axios from 'axios';
 import { OPENAI_KEY } from '../../config';
-import { ChatCompletionOptions, OpenAIChatCompletionAPIResponse, OpenAICompletionAPIResponse, OpenAIRoles } from './types';
+import {
+  ChatCompletionOptions,
+  OpenAIChatCompletionAPIResponse,
+  OpenAICompletionAPIResponse,
+  OpenAIRoles,
+} from './types';
 import persona from '../../persona';
 import { logger } from '../../log';
 
+const CONVERSATION_MODEL = 'gpt-3.5-turbo-16k';
+
 const defaultChatCompletionOptions: Omit<ChatCompletionOptions, 'userId' | 'messages'> = {
-  model: 'gpt-3.5-turbo',
+  model: CONVERSATION_MODEL,
   temperature: 1.3,
-  maxTokens: 400,
+  maxTokens: 1000,
   frequencyPenalty: 0.5,
   howManyChoicesToGenerate: 1,
 };
@@ -26,7 +33,7 @@ export class OpenAIClient {
 
     try {
       const response = await this.axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
+        model: CONVERSATION_MODEL,
         messages: [toSystemMessage(persona.instruction), ...opts.messages],
         temperature: opts.temperature,
         n: opts.howManyChoicesToGenerate,

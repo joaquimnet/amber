@@ -18,7 +18,7 @@ export const discord = {
 };
 
 export const conversation = {
-  MAX_TOTAL_CHARACTER_LENGTH: 3000,
+  MAX_TOTAL_CHARACTER_LENGTH: 8000,
   MAX_AGE: 5,
 };
 
