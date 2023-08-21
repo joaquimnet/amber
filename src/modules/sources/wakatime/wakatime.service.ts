@@ -32,4 +32,4 @@ class WakatimeClient {
   }
 }
 
-// export const wakatimeService = new WakatimeClient();
+export const wakatimeService = new WakatimeClient();
