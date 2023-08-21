@@ -115,12 +115,12 @@ class ConversationModule extends Module {
   async summarize(userId: string, context: IUserInteraction['context']): Promise<string> {
     const dialogueMachine = context
       .map((ctx) => {
-        return `**${ctx.author.replace('ember', 'assistant')}:** ${ctx.content}`;
+        return `**${ctx.author.replace('amber', 'assistant')}:** ${ctx.content}`;
       })
       .join('\n');
 
     const summary = await openAIService.instructionOrFeedback(
-      `Summarize the conversation below in bullet points (Ember is the assistant's name):\n\n${dialogueMachine}`,
+      `Summarize the conversation below in bullet points (Amber is the assistant's name):\n\n${dialogueMachine}`,
       userId,
     );
 

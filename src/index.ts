@@ -6,6 +6,6 @@ import { logger } from './log';
 const version = process.env['npm_package_version']!;
 
 connect().then(() => {
-  logger.info(`Ember v${version}`);
+  logger.info(`Amber v${version}`);
   logger.info('Connected to database');
 });

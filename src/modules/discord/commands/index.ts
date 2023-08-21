@@ -3,7 +3,7 @@ import './ping';
 import './intent';
 import './remember';
 import './context';
-import './ember';
+import './amber';
 import './github';
 import './wakatime';
 import './summary';

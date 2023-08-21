@@ -74,7 +74,7 @@ bot.on(Events.MessageCreate, async (message) => {
   // mentioning the bot when there is no conversation channel registered
   if (noConversationChannelsRegistered && isBotMentioned) {
     await message.reply(
-      "I'm not allowed to talk in the server yet. Please ask an admin to register a conversation channel using the `!chat` command.",
+      "I'm not allowed to talk in the server yet. Please ask an admin to register a conversation channel using the `?chat` command.",
     );
     return;
   }

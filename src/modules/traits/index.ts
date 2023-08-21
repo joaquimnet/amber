@@ -42,7 +42,7 @@ class TraitsModule extends Module {
 
     const traits = aggregation[0]?.traits;
 
-    if (Object.keys(traits).length === 0) {
+    if (!traits || Object.keys(traits).length === 0) {
       return undefined;
     }
     return traits;

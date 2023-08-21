@@ -22,7 +22,7 @@ export const conversation = {
   MAX_AGE: 5,
 };
 
-export const ember = {
+export const utterancesConfig = {
   UTTERANCES_GUILD: '683463960501944327',
   UTTERANCES_CHANNEL: '1102818884257599518',
 };
@@ -33,11 +33,4 @@ export const github = {
 
 export const wakatime = {
   WAKATIME_API_KEY: process.env['WAKATIME_API_KEY']!,
-};
-
-export const hanako = {
-  HANAKO_SERVER: process.env['HANAKO_SERVER']!,
-  HANAKO_ENVIRONMENT: process.env['HANAKO_ENVIRONMENT']!,
-  HANAKO_APP: process.env['HANAKO_APP']!,
-  HANAKO_API_KEY: process.env['HANAKO_API_KEY']!,
 };

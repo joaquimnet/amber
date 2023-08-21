@@ -1,6 +1,6 @@
 import { TextChannel } from 'discord.js';
 import { bot } from '../../bot';
-import { ember } from '../../config';
+import { utterancesConfig } from '../../config';
 import { Chat } from './chats/chat';
 import { OperationalLog } from '../../models';
 import { events } from '../events';
@@ -38,7 +38,7 @@ export async function registerAutonomousUtterancesEvents() {
   });
 
   events.on('autonomy:chat', async (utteranceId: string, message: string) => {
-    const channel = bot.guilds.cache.get(ember.UTTERANCES_GUILD)?.channels.cache.get(ember.UTTERANCES_CHANNEL);
+    const channel = bot.guilds.cache.get(utterancesConfig.UTTERANCES_GUILD)?.channels.cache.get(utterancesConfig.UTTERANCES_CHANNEL);
     if (channel instanceof TextChannel) {
       const messages = splitMessage(message);
       for (const message of messages) {

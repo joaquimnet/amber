@@ -2,9 +2,9 @@ import { Message } from 'discord.js';
 import { Command } from '../command';
 import { openAIService } from '../../openai/openai';
 
-class EmberCommand extends Command {
+class BotCommand extends Command {
   constructor() {
-    super({ name: 'ember' });
+    super({ name: 'amber' });
   }
 
   async execute(message: Message) {
@@ -17,4 +17,4 @@ class EmberCommand extends Command {
   }
 }
 
-export default new EmberCommand();
+export default new BotCommand();

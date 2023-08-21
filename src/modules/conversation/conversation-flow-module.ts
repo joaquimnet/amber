@@ -12,6 +12,7 @@ const nicknameRegex = new RegExp(`\\b(${persona.nicknames.join('|')})\\b`, 'gi')
 const isMentioningBot = (message: Message) => message.mentions.users.has(bot.user!.id);
 const dismissalRegex = new RegExp(
   `^(bye|goodbye|see\\s?you|catch\\s?you)\\s*(later|soon|!|\\?)*\\s*(${persona.nicknames.join('|')})*$`,
+  'i',
 );
 
 class ConversationFlowModule extends Module {
@@ -31,23 +32,23 @@ class ConversationFlowModule extends Module {
       return;
     }
 
-    // add check to see if this is a registered channel for Ember conversations
+    // add check to see if this is a registered channel for Amber conversations
 
     const autoChatHandled = await this._handleAutoChat(message);
     if (autoChatHandled) return;
 
     const context = await conversationModule.getContext(message.author.id);
 
-    const isCallingEmber = nicknameRegex.test(message.content) || isMentioningBot(message);
-    const isDismissingEmber = message.content.toLowerCase().match(dismissalRegex);
+    const isCallingAmber = nicknameRegex.test(message.content) || isMentioningBot(message);
+    const isDismissingAmber = message.content.toLowerCase().match(dismissalRegex);
     const hasExistingConversation = context.messages.filter((m) => m.author !== OpenAIRoles.ASSISTANT).length > 0;
 
-    if (hasExistingConversation && isDismissingEmber) {
+    if (hasExistingConversation && isDismissingAmber) {
       await this._conversationDismiss(message);
       return;
     }
 
-    if (!hasExistingConversation && !isCallingEmber) return;
+    if (!hasExistingConversation && !isCallingAmber) return;
 
     await this._conversationBegin(message);
   }
@@ -74,7 +75,7 @@ class ConversationFlowModule extends Module {
     await message.channel.sendTyping();
     await conversationModule.respond(
       message.author.id,
-      message.member?.nickname || message.author.username,
+      message.member?.nickname || message.author.displayName,
       context,
       message.channel as TextChannel,
     );
@@ -113,8 +114,8 @@ class ConversationFlowModule extends Module {
         last2MessagesInChannel && Array.isArray(last2MessagesInChannel) && last2MessagesInChannel.length === 2;
 
       if (channelHasMessages) {
-        const possibleEmberAutoChat = last2MessagesInChannel[0];
-        const isResponseToAutoChat = latestAutoChatInThisChannel.meta.discordMessageId === possibleEmberAutoChat.id;
+        const possibleAmberAutoChat = last2MessagesInChannel[0];
+        const isResponseToAutoChat = latestAutoChatInThisChannel.meta.discordMessageId === possibleAmberAutoChat.id;
         if (isResponseToAutoChat) {
           await this.handleAutoChatStarter(message, latestAutoChatInThisChannel);
           return true;

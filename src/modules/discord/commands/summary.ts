@@ -18,22 +18,20 @@ class SummaryCommand extends Command {
 
     const dialogueDisplay = conversation.context
       .map((context) => {
-        // return `**${context.author.replace('ember', 'assistant')}:** ${context.content}`;
         return `**${context.author}:** ${context.content}`;
       })
       .join('\n');
 
     const dialogueMachine = conversation.context
       .map((context) => {
-        // return `**${context.author.replace('ember', 'assistant')}:** ${context.content}`;
-        return `**${context.author.replace('ember', 'assistant')}:** ${context.content}`;
+        return `**${context.author.replace('amber', 'assistant')}:** ${context.content}`;
       })
       .join('\n');
 
     const length = dialogueDisplay.length;
 
     const summary = await openAIService.instructionOrFeedback(
-      `Summarize the conversation below in bullet points (Ember is the assistant's name):\n\n${dialogueMachine}`,
+      `Summarize the conversation below in bullet points (Amber is the assistant's name):\n\n${dialogueMachine}`,
       message.author.id,
     );
 
