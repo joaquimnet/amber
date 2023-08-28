@@ -7,7 +7,8 @@ const version = process.env['npm_package_version']!;
 const packageName = process.env['npm_package_name']!;
 const packageNameFormatted = packageName[0].toUpperCase() + packageName.substring(1);
 
+logger.info(`${packageNameFormatted} v${version}`);
+
 connect().then(() => {
-  logger.info(`${packageNameFormatted} v${version}`);
   logger.info('Connected to database');
 });

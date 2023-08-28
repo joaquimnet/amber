@@ -4,10 +4,8 @@ import { GuildPreferencesDocument } from '../../../models/guild-pereferences.mod
 
 class ChatCommand extends Command {
   constructor() {
-    super({ name: 'chat' });
+    super({ name: 'chat', description: 'Toggles chat mode on/off on the current channel.' });
   }
-
-  description = 'Toggles chat mode on/off on the current channel.';
 
   async execute(message: Message, args: string, guildPreferences: GuildPreferencesDocument) {
     const isCurrentChannelAChatChannel = guildPreferences.conversation.allowedChannels.includes(message.channelId);

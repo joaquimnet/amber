@@ -5,7 +5,7 @@ import fs from 'fs';
 const manager = new NlpManager({
   languages: ['en'],
   forceNER: true,
-  nlu: { useNoneFeature: true },
+  nlu: { useNoneFeature: true, log: false },
   // surely this is fine
   autoSave: false,
 });

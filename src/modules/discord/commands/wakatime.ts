@@ -5,7 +5,7 @@ import { inspect } from 'util';
 
 class WakatimeCommand extends Command {
   constructor() {
-    super({ name: 'wakatime' });
+    super({ name: 'wakatime', description: 'Shows the wakatime summary for today.' });
   }
 
   async execute(message: Message) {

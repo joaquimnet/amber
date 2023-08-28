@@ -4,7 +4,7 @@ import { githubService } from '../../sources/github/github.service';
 
 class GithubCommand extends Command {
   constructor() {
-    super({ name: 'github' });
+    super({ name: 'github', description: 'Shows the last 24 hours of Github commits for all repos.' });
   }
 
   async execute(message: Message) {

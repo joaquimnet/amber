@@ -6,7 +6,7 @@ import { splitMessage } from '../../util/discord';
 
 class SummaryCommand extends Command {
   constructor() {
-    super({ name: 'summary' });
+    super({ name: 'summary', description: 'Summarizes a conversation.' });
   }
 
   async execute(message: Message, args: string) {
@@ -40,6 +40,10 @@ class SummaryCommand extends Command {
     for (const m of splitMessage(msg)) {
       if (m) await message.channel.send(m);
     }
+  }
+
+  override help() {
+    return `**${this.name}**\n?${this.name} [conversation id]`;
   }
 }
 

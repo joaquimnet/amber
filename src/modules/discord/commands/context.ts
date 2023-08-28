@@ -4,7 +4,7 @@ import conversationModule from '../../conversation/conversation-module';
 
 class ContextCommand extends Command {
   constructor() {
-    super({ name: 'context' });
+    super({ name: 'context', description: 'Debugging command that prints the conversation context to the console.' });
   }
 
   async execute(message: Message) {

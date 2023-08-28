@@ -6,7 +6,7 @@ import { logger } from './log';
 import { events } from './modules/events';
 import { resolveIntent } from './modules/intent/resolve-intent';
 import conversationFlowModule from './modules/conversation/conversation-flow-module';
-import './modules/discord/commands';
+import { loadAllCommands } from './modules/discord';
 import { GuildPreferences } from './models/guild-pereferences.model';
 
 const bot = new Client({
@@ -98,6 +98,9 @@ bot.on(Events.MessageCreate, async (message) => {
   await conversationFlowModule.handleConversation(message, intent as ConversationCommand);
 });
 
-bot.login(discord.token);
+loadAllCommands().then((commands) => {
+  logger.info(`Loaded ${commands.length} commands`);
+  bot.login(discord.token);
+});
 
 export { bot };

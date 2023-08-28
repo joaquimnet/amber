@@ -7,7 +7,10 @@ import conversationModule from '../../conversation/conversation-module';
 
 class RememberCommand extends Command {
   constructor() {
-    super({ name: 'remember' });
+    super({
+      name: 'remember',
+      description: 'Debugging commands that loads the last conversation into the current context.',
+    });
   }
 
   async execute(message: Message, args: string) {
@@ -22,6 +25,10 @@ class RememberCommand extends Command {
     } else {
       await message.react('😕');
     }
+  }
+
+  override help() {
+    return `**${this.name}**\n?${this.name} [search query]`;
   }
 }
 

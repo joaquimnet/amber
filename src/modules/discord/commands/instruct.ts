@@ -5,7 +5,7 @@ import { splitMessage } from '../../util/discord';
 
 class InstructCommand extends Command {
   constructor() {
-    super({ name: 'instruct' });
+    super({ name: 'instruct', description: 'Instructs the bot to generate or say something.' });
   }
 
   async execute(message: Message, args: string) {
@@ -18,6 +18,10 @@ class InstructCommand extends Command {
     }
 
     await message.reactions.removeAll();
+  }
+
+  override help() {
+    return `**${this.name}**\n?${this.name} [message]`;
   }
 }
 

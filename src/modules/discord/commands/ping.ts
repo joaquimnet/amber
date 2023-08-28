@@ -3,7 +3,7 @@ import { Command } from '../command';
 
 class PingCommand extends Command {
   constructor() {
-    super({ name: 'ping' });
+    super({ name: 'ping', description: 'Pings the bot.' });
   }
 
   execute(message: Message) {
