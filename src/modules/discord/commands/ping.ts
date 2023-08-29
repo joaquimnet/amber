@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Command } from '../command';
 
 class PingCommand extends Command {
@@ -6,8 +6,8 @@ class PingCommand extends Command {
     super({ name: 'ping', description: 'Pings the bot.' });
   }
 
-  execute(message: Message) {
-    message.reply('pong');
+  async execute(interaction: CommandInteraction) {
+    await interaction.reply('Pong!');
   }
 }
 

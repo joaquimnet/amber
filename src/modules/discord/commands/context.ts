@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Command } from '../command';
 import conversationModule from '../../conversation/conversation-module';
 
@@ -7,10 +7,10 @@ class ContextCommand extends Command {
     super({ name: 'context', description: 'Debugging command that prints the conversation context to the console.' });
   }
 
-  async execute(message: Message) {
-    const context = await conversationModule.getContext(message.author.id);
+  async execute(interaction: CommandInteraction) {
+    const context = await conversationModule.getContext(interaction.user.id);
     console.log(context);
-    await message.reply('I posted your context to the console.');
+    await interaction.reply('I posted your context to the console.');
   }
 }
 

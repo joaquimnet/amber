@@ -1,5 +1,5 @@
-import { Message } from 'discord.js';
-import { Command } from '../command';
+import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
+import { Command, CommandInteractionOptions } from '../command';
 import { UserInteraction } from '../../../models';
 import conversationModule from '../../conversation/conversation-module';
 
@@ -10,20 +10,36 @@ class RememberCommand extends Command {
     super({
       name: 'remember',
       description: 'Debugging commands that loads the last conversation into the current context.',
+      options: [
+        {
+          name: 'search',
+          description: 'Search query',
+          type: ApplicationCommandOptionType.String,
+          min_length: 3,
+          required: true,
+        },
+      ],
+      // enabled: false,
     });
   }
 
-  async execute(message: Message, args: string) {
+  async execute(interaction: CommandInteraction, options: CommandInteractionOptions) {
+    await interaction.deferReply({ ephemeral: true });
+
     const conversation = await UserInteraction.findOne(
-      { $text: { $search: args.trim() } },
+      { $text: { $search: options.getString('search')! } },
       { score: { $meta: 'textScore' } },
     ).sort({ score: { $meta: 'textScore' } });
 
     if (conversation) {
-      await conversationModule.remember(message.author.id, conversation);
-      await message.react('👍');
+      await conversationModule.remember(interaction.user.id, conversation);
+      await interaction.editReply({
+        content: 'Done!',
+      });
     } else {
-      await message.react('😕');
+      await interaction.editReply({
+        content: 'No conversation found.',
+      });
     }
   }
 

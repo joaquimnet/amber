@@ -1,19 +1,35 @@
-import { Message } from 'discord.js';
-import { Command } from '../command';
+import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
+import { Command, CommandInteractionOptions } from '../command';
 import { IUserInteraction, UserInteraction } from '../../../models';
 import { openAIService } from '../../openai/openai';
 import { splitMessage } from '../../util/discord';
 
 class SummaryCommand extends Command {
   constructor() {
-    super({ name: 'summary', description: 'Summarizes a conversation.' });
+    super({
+      name: 'summary',
+      description: 'Summarizes a conversation.',
+      options: [
+        {
+          name: 'conversation-id',
+          description: 'The id of the conversation to summarize.',
+          type: ApplicationCommandOptionType.String,
+          required: true,
+        },
+      ],
+    });
   }
 
-  async execute(message: Message, args: string) {
-    const conversation = (await UserInteraction.findById(args.trim())) as IUserInteraction;
+  async execute(interaction: CommandInteraction, options: CommandInteractionOptions) {
+    await interaction.deferReply({
+      ephemeral: true,
+    });
+    const conversationId = options.getString('conversation-id')!;
+    const conversation = (await UserInteraction.findById(conversationId)) as IUserInteraction;
 
     if (!conversation) {
-      return await message.reply(`No conversation found with id ${args.trim()}`);
+      await interaction.editReply(`No conversation found with id ${conversationId}`);
+      return;
     }
 
     const dialogueDisplay = conversation.context
@@ -32,14 +48,16 @@ class SummaryCommand extends Command {
 
     const summary = await openAIService.instructionOrFeedback(
       `Summarize the conversation below in bullet points (Amber is the assistant's name):\n\n${dialogueMachine}`,
-      message.author.id,
+      interaction.user.id,
     );
 
     const msg = `**Summary:**\n\n${summary}\n\n**Original Conversation:**\n\n${dialogueDisplay}\n\n**Length:** ${length} characters`;
 
     for (const m of splitMessage(msg)) {
-      if (m) await message.channel.send(m);
+      if (m) await interaction.channel!.send(m);
     }
+
+    await interaction.reply('Done!');
   }
 
   override help() {

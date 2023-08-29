@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { Command } from '../command';
 import { openAIService } from '../../openai/openai';
 
@@ -7,13 +7,13 @@ class BotCommand extends Command {
     super({ name: 'amber', description: 'Introduces Amber to the user.' });
   }
 
-  async execute(message: Message) {
-    await message.channel.sendTyping();
+  async execute(interaction: CommandInteraction) {
+    await interaction.channel?.sendTyping();
     const intro = await openAIService.instructionOrFeedback(
-      `Introduce yourself to this user named ${message.member?.nickname || message.author.displayName}. You can use emojis.`,
+      `Introduce yourself to this user named ${interaction.user.globalName}. You can use emojis.`,
     );
 
-    await message.reply(intro);
+    await interaction.reply(intro);
   }
 }
 

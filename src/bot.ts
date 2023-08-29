@@ -1,13 +1,13 @@
-/* eslint-disable complexity */
 import { discord } from './config';
-import { Client, Events, GatewayIntentBits, Message, Partials } from 'discord.js';
+import { ChatInputCommandInteraction, Client, Events, GatewayIntentBits, Partials } from 'discord.js';
 import { ConversationCommand } from './modules/conversation/commands/conversation-command';
 import { logger } from './log';
 import { events } from './modules/events';
 import { resolveIntent } from './modules/intent/resolve-intent';
 import conversationFlowModule from './modules/conversation/conversation-flow-module';
-import { loadAllCommands } from './modules/discord';
+import { commands, loadAllCommands } from './modules/discord';
 import { GuildPreferences } from './models/guild-pereferences.model';
+import { registerCommandsWithDiscord } from './modules/discord/register-commands-with-discord';
 
 const bot = new Client({
   partials: [
@@ -40,10 +40,6 @@ bot.once(Events.ClientReady, (c) => {
   logger.info(`Ready! Logged in as ${c.user.tag}`);
 });
 
-const messageContainsBotMention = (message: Message) => {
-  return message.mentions.users.has(bot.user!.id);
-};
-
 bot.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return;
 
@@ -53,23 +49,10 @@ bot.on(Events.MessageCreate, async (message) => {
     { upsert: true, new: true },
   );
 
-  // Commands
-  if (message.content.toLowerCase().startsWith('?')) {
-    const [command, args] = [message.content.split(' ')[0].slice(1), message.content.split(' ').slice(1).join(' ')];
-    events.emit('discord:command:' + command, message, args, guildPreferences);
-    return;
-  }
-
   const channelId = message.channelId;
   const isConversationChannel = guildPreferences?.conversation.allowedChannels.includes(channelId);
   const noConversationChannelsRegistered = guildPreferences?.conversation.allowedChannels.length === 0;
-  const isBotMentioned = messageContainsBotMention(message);
-
-  console.log({
-    isConversationChannel,
-    noConversationChannelsRegistered,
-    isBotMentioned,
-  });
+  const isBotMentioned = message.mentions.users.has(bot.user!.id);
 
   // mentioning the bot when there is no conversation channel registered
   if (noConversationChannelsRegistered && isBotMentioned) {
@@ -98,9 +81,41 @@ bot.on(Events.MessageCreate, async (message) => {
   await conversationFlowModule.handleConversation(message, intent as ConversationCommand);
 });
 
+bot.on(Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  const { commandName } = interaction;
+
+  const guildPreferences = await GuildPreferences.findOneAndUpdate(
+    { guildId: interaction.guildId },
+    { guildId: interaction.guildId },
+    { upsert: true, new: true },
+  );
+
+  const command = commands.find((c) => c.name === commandName);
+
+  if (!command) {
+    logger.warn(`Command ${commandName} not found`);
+    await interaction.reply({ content: 'Command not found', ephemeral: true });
+    return;
+  }
+
+  try {
+    logger.debug(`User ${interaction.user.globalName} executes command ${commandName}`);
+    await command.execute(interaction, interaction.options as ChatInputCommandInteraction['options'], guildPreferences);
+  } catch (err) {
+    logger.error(err);
+    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+  }
+
+  if (!interaction.replied) {
+    await interaction.reply({ content: 'Done!', ephemeral: true });
+  }
+});
+
 loadAllCommands().then((commands) => {
   logger.info(`Loaded ${commands.length} commands`);
-  bot.login(discord.token);
+  bot.login(discord.token).then(() => registerCommandsWithDiscord(bot));
 });
 
 export { bot };

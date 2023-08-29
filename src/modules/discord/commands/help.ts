@@ -1,27 +1,51 @@
-import { Message } from 'discord.js';
-import { Command } from '../command';
+import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
+import { Command, CommandInteractionOptions } from '../command';
 import { commands } from '..';
 import { GuildPreferencesDocument } from '../../../models/guild-pereferences.model';
 
 class HelpCommand extends Command {
   constructor() {
-    super({ name: 'help', description: 'Shows this help message.' });
+    super({
+      name: 'help',
+      description: 'Lists all commands.',
+      dmPermission: true,
+      options: [
+        {
+          name: 'command',
+          description: 'The command to get help for.',
+          type: ApplicationCommandOptionType.String,
+          required: false,
+        },
+      ],
+    });
   }
 
-  execute(message: Message, args: string, guildPreferences: GuildPreferencesDocument) {
-    const specificCommand = commands.find((c) => c.name === args.toLowerCase().trim());
+  async execute(
+    interaction: CommandInteraction,
+    options: CommandInteractionOptions,
+    guildPreferences: GuildPreferencesDocument,
+  ) {
+    const specificCommand = commands
+      .filter((command) => command.enabled)
+      .find((c) => c.name === options.getString('command')?.toLowerCase().trim());
 
     if (specificCommand) {
-      message.channel.send(specificCommand.help(guildPreferences));
+      await interaction.reply({
+        content: specificCommand.help(guildPreferences),
+        ephemeral: true,
+      });
       return;
     }
 
     let help = commands.map((c) => `**${c.name}** ${c.description ?? ''}`).join('\n');
-    help += '\nTo see more information about a specific command, type `?help [command]`.';
-    message.channel.send(help);
+    help += '\nTo see more information about a specific command, type `/help [command]`.';
+    await interaction.reply({
+      content: help,
+      ephemeral: true,
+    });
   }
 
-  override help(guildPreferences: GuildPreferencesDocument) {
+  override help() {
     return `**${this.name}**\n?${this.name} [command]`;
   }
 }

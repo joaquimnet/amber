@@ -1,23 +1,32 @@
-import { Message } from 'discord.js';
-import { Command } from '../command';
+import { ApplicationCommandOptionType, CommandInteraction } from 'discord.js';
+import { Command, CommandInteractionOptions } from '../command';
 import { openAIService } from '../../openai/openai';
-import { splitMessage } from '../../util/discord';
 
 class InstructCommand extends Command {
   constructor() {
-    super({ name: 'instruct', description: 'Instructs the bot to generate or say something.' });
+    super({
+      name: 'instruct',
+      description: 'Instructs the bot to generate or say something.',
+      options: [
+        {
+          name: 'message',
+          description: 'The message to generate or say.',
+          type: ApplicationCommandOptionType.String,
+          required: true,
+        },
+      ],
+    });
   }
 
-  async execute(message: Message, args: string) {
-    await Promise.all([message.channel.sendTyping(), message.react('🤔')]);
+  async execute(interaction: CommandInteraction, options: CommandInteractionOptions) {
+    await interaction.deferReply({ ephemeral: true });
 
-    const result = await openAIService.contextlessDavinciCompletion(args);
+    const result = await openAIService.contextlessDavinciCompletion(options.getString('message')!);
 
-    for (const msg of splitMessage(result.choices[0].text)) {
-      await message.channel.send(msg);
-    }
-
-    await message.reactions.removeAll();
+    await interaction.editReply({
+      content: '```' + JSON.stringify(JSON.parse(result.choices[0].text), null, 2) + '```',
+      allowedMentions: { parse: [] },
+    });
   }
 
   override help() {

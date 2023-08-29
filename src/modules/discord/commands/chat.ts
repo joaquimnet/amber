@@ -1,5 +1,5 @@
-import { Message } from 'discord.js';
-import { Command } from '../command';
+import { CommandInteraction } from 'discord.js';
+import { Command, CommandInteractionOptions } from '../command';
 import { GuildPreferencesDocument } from '../../../models/guild-pereferences.model';
 
 class ChatCommand extends Command {
@@ -7,20 +7,24 @@ class ChatCommand extends Command {
     super({ name: 'chat', description: 'Toggles chat mode on/off on the current channel.' });
   }
 
-  async execute(message: Message, args: string, guildPreferences: GuildPreferencesDocument) {
-    const isCurrentChannelAChatChannel = guildPreferences.conversation.allowedChannels.includes(message.channelId);
+  async execute(
+    interaction: CommandInteraction,
+    options: CommandInteractionOptions,
+    guildPreferences: GuildPreferencesDocument,
+  ) {
+    const isCurrentChannelAChatChannel = guildPreferences.conversation.allowedChannels.includes(interaction.channelId);
 
     if (isCurrentChannelAChatChannel) {
       guildPreferences.conversation.allowedChannels = guildPreferences.conversation.allowedChannels.filter(
-        (channelId) => channelId !== message.channelId,
+        (channelId) => channelId !== interaction.channelId,
       );
       await guildPreferences.save();
-      await message.reply('Chat mode disabled on this channel.');
+      await interaction.reply('Chat mode disabled on this channel.');
       return;
     } else {
-      guildPreferences.conversation.allowedChannels.push(message.channelId);
+      guildPreferences.conversation.allowedChannels.push(interaction.channelId);
       await guildPreferences.save();
-      await message.reply('Chat mode enabled on this channel.');
+      await interaction.reply('Chat mode enabled on this channel.');
       return;
     }
   }

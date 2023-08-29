@@ -16,5 +16,6 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     complexity: ['error', 8],
     'max-nested-callbacks': ['error', 3],
+    '@typescript-eslint/no-empty-function': 'off',
   },
 };
