@@ -5,9 +5,10 @@ import { logger } from './log';
 import { events } from './modules/events';
 import { resolveIntent } from './modules/intent/resolve-intent';
 import conversationFlowModule from './modules/conversation/conversation-flow-module';
-import { commands, loadAllCommands } from './modules/discord';
+import { commands, interactions, loadAllCommands, loadAllInteractions } from './modules/discord';
 import { GuildPreferences } from './models/guild-pereferences.model';
 import { registerCommandsWithDiscord } from './modules/discord/register-commands-with-discord';
+import { parseInteractionId } from './modules/discord/interaction';
 
 const bot = new Client({
   partials: [
@@ -82,39 +83,72 @@ bot.on(Events.MessageCreate, async (message) => {
 });
 
 bot.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  const { commandName } = interaction;
-
   const guildPreferences = await GuildPreferences.findOneAndUpdate(
     { guildId: interaction.guildId },
     { guildId: interaction.guildId },
     { upsert: true, new: true },
   );
 
-  const command = commands.find((c) => c.name === commandName);
+  // commands handling
 
-  if (!command) {
-    logger.warn(`Command ${commandName} not found`);
-    await interaction.reply({ content: 'Command not found', ephemeral: true });
+  if (interaction.isCommand()) {
+    const { commandName } = interaction;
+
+    const command = commands.find((c) => c.name === commandName);
+
+    if (!command) {
+      logger.warn(`Command ${commandName} not found`);
+      await interaction.reply({ content: 'Command not found', ephemeral: true });
+      return;
+    }
+
+    try {
+      logger.debug(`User ${interaction.user.globalName} executes command ${commandName}`);
+      await command.execute(
+        interaction,
+        interaction.options as ChatInputCommandInteraction['options'],
+        guildPreferences,
+      );
+    } catch (err) {
+      logger.error(err);
+      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+    }
+
+    if (!interaction.replied) {
+      await interaction.reply({ content: 'Done!', ephemeral: true });
+    }
+
     return;
   }
 
+  // interactions handling
+
+  const parsedInteractionId = parseInteractionId(interaction);
+  const handler = interactions.get(parsedInteractionId.name);
+  if (!handler) {
+    if ('reply' in interaction) {
+      interaction.reply({
+        content: '🥺 Something went wrong, please try again later.',
+        ephemeral: true,
+      });
+    }
+    return;
+  }
+  
   try {
-    logger.debug(`User ${interaction.user.globalName} executes command ${commandName}`);
-    await command.execute(interaction, interaction.options as ChatInputCommandInteraction['options'], guildPreferences);
+    logger.debug(`User ${interaction.user.globalName} executes interaction ${handler?.name}`);
+    await handler?.execute(interaction, parsedInteractionId.payload, guildPreferences);
   } catch (err) {
     logger.error(err);
-    await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-  }
-
-  if (!interaction.replied) {
-    await interaction.reply({ content: 'Done!', ephemeral: true });
+    if ('reply' in interaction) {
+      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+    }
   }
 });
 
-loadAllCommands().then((commands) => {
+Promise.all([loadAllCommands(), loadAllInteractions()]).then(([commands, interactions]) => {
   logger.info(`Loaded ${commands.length} commands`);
+  logger.info(`Loaded ${interactions.size} interactions`);
   bot.login(discord.token).then(() => registerCommandsWithDiscord(bot));
 });
 

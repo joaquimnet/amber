@@ -18,8 +18,8 @@ export const discord = {
 };
 
 export const conversation = {
-  MAX_TOTAL_CHARACTER_LENGTH: 8000,
-  MAX_AGE: 5,
+  MAX_TOTAL_CHARACTER_LENGTH: 14000,
+  MAX_AGE: 30,
 };
 
 export const utterancesConfig = {

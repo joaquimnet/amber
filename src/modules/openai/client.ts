@@ -10,6 +10,7 @@ import persona from '../../persona';
 import { logger } from '../../log';
 
 const CONVERSATION_MODEL = 'gpt-3.5-turbo-16k';
+const INSTRUCT_MODEL = 'text-davinci-003';
 
 const defaultChatCompletionOptions: Omit<ChatCompletionOptions, 'userId' | 'messages'> = {
   model: CONVERSATION_MODEL,
@@ -79,13 +80,13 @@ export class OpenAIClient {
   async contextlessDavinciCompletion(prompt: string): Promise<OpenAICompletionAPIResponse> {
     const temperature = 0.8;
     const howManyChoicesToGenerate = 1;
-    const maxTokens = 800;
+    const maxTokens = 8000;
     // this helps with code generation
     const frequencyPenalty = 0;
 
     try {
       const response = await this.axios.post('https://api.openai.com/v1/completions', {
-        model: 'text-davinci-003',
+        model: INSTRUCT_MODEL,
         prompt,
         temperature,
         n: howManyChoicesToGenerate,

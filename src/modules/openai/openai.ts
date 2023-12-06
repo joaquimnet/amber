@@ -41,6 +41,15 @@ export class OpenAIService {
         content:
           "The system is built as to allow you keep the context of your conversation so if you need more information don't be afraid to ask follow up question or prompt the user for more information.",
       },
+      {
+        role: OpenAIRoles.SYSTEM,
+        content:
+          "You're responding in discord which means your responses cannot be to long or you'll lose the users' attention. Unless you're giving instructions for a complex task, try to be brief in your responses and avoid walls of text.",
+      },
+      {
+        role: OpenAIRoles.SYSTEM,
+        content: "Don't offer suggestions unless the user asks for it. You can ask if the user wants suggestions.",
+      },
     ];
 
     if (traits.status === ModuleStatus.ENABLED) {
