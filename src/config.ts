@@ -34,3 +34,5 @@ export const github = {
 export const wakatime = {
   WAKATIME_API_KEY: process.env['WAKATIME_API_KEY']!,
 };
+
+export const NOTIFICATIONS_TOPIC = process.env['NOTIFICATIONS_TOPIC']!;
