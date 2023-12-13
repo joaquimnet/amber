@@ -1,8 +1,6 @@
 import { OpenAIRoles, OpenAIMessages, OpenAIChatCompletionAPIResponse } from './types';
 import persona from '../../persona';
 import { OpenAIClient } from './client';
-import traits from '../traits';
-import { ModuleStatus } from '../module';
 
 export class OpenAIService {
   private client: OpenAIClient = new OpenAIClient();
@@ -51,16 +49,6 @@ export class OpenAIService {
         content: "Don't offer suggestions unless the user asks for it. You can ask if the user wants suggestions.",
       },
     ];
-
-    if (traits.status === ModuleStatus.ENABLED) {
-      const userTraits = traits.getUserTraits(userId);
-      if (userTraits) {
-        systemContext.push({
-          role: OpenAIRoles.SYSTEM,
-          content: `This JSON describes extra facts you know about the user: ${JSON.stringify(userTraits)}`,
-        });
-      }
-    }
 
     if (isConversational) {
       systemContext.push({

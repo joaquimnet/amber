@@ -2,22 +2,20 @@ import { Message, TextChannel } from 'discord.js';
 import nodeSchedule from 'node-schedule';
 import * as chrono from 'chrono-node';
 import { IReminder, Reminder } from '../../models';
-import { events } from '../events';
 import { openAIService } from '../openai/openai';
 import { OpenAIRoles } from '../openai/types';
 import { bot } from '../../bot';
-import { Module, ModuleStatus } from '../module';
-import cron from '../cron';
+import axios from 'axios';
+import { NOTIFICATIONS_TOPIC } from '../../config';
 
-class ReminderHandler extends Module {
-  name = 'Reminders';
-  status: ModuleStatus = ModuleStatus.ENABLED;
-  dependencies?: Module[] | undefined = [cron];
+// TODO: this file should not interact with the discord api, only database and scheduler
 
-  async init() {
-    events.on('awareness:intent:reminders:add', this.onAddReminder.bind(this));
-    events.on('reminders:fire', this.fireReminder.bind(this));
+export class ReminderHandler {
+  constructor() {
+    this.scheduleExistingReminders();
+  }
 
+  private async scheduleExistingReminders() {
     const reminders = await Reminder.find({});
     for (const r of reminders) {
       this.scheduleReminder(r);
@@ -50,6 +48,16 @@ class ReminderHandler extends Module {
     if (channel) {
       channel.send(`:calendar: <@${reminder.userId}> Reminder!\n\n${reminder.content}`);
     }
+
+    axios.post('https://ntfy.sh/' + NOTIFICATIONS_TOPIC, `Reminder: ${reminder.content}`, {
+      headers: {
+        Icon: 'https://media.discordapp.net/ephemeral-attachments/1182820656446976032/1182838809616986212/b95ba7ab8d246d207b275ea1753169fe.webp?ex=6586277c&is=6573b27c&hm=04874a48b55e802114795c3713d51834db16843cf31c8d71f601a9cb7eadc951&=&format=webp&width=115&height=115',
+        Title: 'Amber',
+        Priority: '3',
+        Tags: 'calendar',
+        Click: channel.url,
+      },
+    });
   }
 
   async onAddReminder(message: Message) {

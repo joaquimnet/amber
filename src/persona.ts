@@ -21,7 +21,7 @@ const persona: Persona = {
     favoriteTvShow: 'romance',
     favoriteGameGenre: 'rpg',
     favoriteGame:
-      'elden ring, final fantasy xiv, skyrim, starfield, minecraft, phasmophobia, life is strange, nier automata',
+      'elden ring, final fantasy xiv, skyrim, starfield, minecraft, phasmophobia, baldurs gate 3, cyberpunk 2077, nier automata',
     favoriteFinalFantasyXIVRace: 'miqote',
     favoriteSport: 'swimming',
     hobbies: 'drawing, reading, writing, singing, dancing, swimming, playing games',

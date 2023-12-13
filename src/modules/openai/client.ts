@@ -8,9 +8,11 @@ import {
 } from './types';
 import persona from '../../persona';
 import { logger } from '../../log';
+import { inspect } from 'util';
 
 const CONVERSATION_MODEL = 'gpt-3.5-turbo-16k';
-const INSTRUCT_MODEL = 'text-davinci-003';
+const INSTRUCT_OR_FEEDBACK_MODEL = 'gpt-3.5-turbo-16k';
+const DAVINCI_MODEL = 'text-davinci-003';
 
 const defaultChatCompletionOptions: Omit<ChatCompletionOptions, 'userId' | 'messages'> = {
   model: CONVERSATION_MODEL,
@@ -42,7 +44,7 @@ export class OpenAIClient {
         frequency_penalty: opts.frequencyPenalty,
         user: opts.userId,
       });
-      logger.info('OpenAI Request (chat)', { meta: response.data });
+      logger.info('OpenAI Request (chat)', opts.messages[0], inspect({ meta: response.data }, false, null, true));
       return response.data;
     } catch (err: any) {
       console.log('err.response.data: ', err.response.data);
@@ -58,7 +60,7 @@ export class OpenAIClient {
 
     try {
       const response = await this.axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-3.5-turbo',
+        model: INSTRUCT_OR_FEEDBACK_MODEL,
         messages: [
           { role: OpenAIRoles.SYSTEM, content: persona.instruction },
           { role: OpenAIRoles.SYSTEM, content: prompt },
@@ -69,7 +71,7 @@ export class OpenAIClient {
         frequency_penalty: frequencyPenalty,
         user: userId || 'Kaf',
       });
-      logger.info('OpenAI Request (instruction)', { meta: response.data });
+      logger.info('OpenAI Request (instruction)', prompt, inspect({ meta: response.data }, false, null, true));
       return response.data.choices[0].message.content;
     } catch (err: any) {
       console.log('err.response.data: ', err.response.data);
@@ -86,7 +88,7 @@ export class OpenAIClient {
 
     try {
       const response = await this.axios.post('https://api.openai.com/v1/completions', {
-        model: INSTRUCT_MODEL,
+        model: DAVINCI_MODEL,
         prompt,
         temperature,
         n: howManyChoicesToGenerate,
@@ -95,18 +97,12 @@ export class OpenAIClient {
         frequency_penalty: frequencyPenalty,
         user: 'Kaf',
       });
-      logger.info('OpenAI Request (system)', { meta: response.data });
+      logger.info('OpenAI Request (system)', prompt, inspect({ meta: response.data }, false, null, true));
       return response.data;
     } catch (err: any) {
       throw err.response.data;
     }
   }
-
-  // might be used again later
-  // private async refreshPersonalityTraits() {
-  //   const traits = (await (PersonalityTrait as any).getUserTraits('ember'))[0]?.traits as Record<string, string[]>;
-  //   emberPersonalityTraits = JSON.stringify(traits);
-  // }
 }
 
 function toSystemMessage(message: string) {

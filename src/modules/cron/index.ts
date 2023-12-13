@@ -1,38 +1,52 @@
+import EventEmitter2 from 'eventemitter2';
 import cron from 'node-cron';
-import { Module, ModuleStatus } from '../module';
-import { events } from '../events';
 
-class CronModule extends Module {
-  name = 'Cron';
-  status = ModuleStatus.ENABLED;
-  dependencies?: Module[] | undefined;
+export enum CronEvents {
+  MINUTE = 'cron:minute',
+  HOURLY = 'cron:hourly',
+  DAILY = 'cron:daily',
+  WEEKLY = 'cron:weekly',
+  MONTHLY = 'cron:monthly',
+  YEARLY = 'cron:yearly',
+  EVERY_5_MINUTES = 'cron:every-5-minutes',
+}
 
-  init() {
-    // - Minute: * * * * * (runs every minute)
+export class Cron extends EventEmitter2 {
+  constructor() {
+    super({
+      wildcard: true,
+      delimiter: ':',
+      maxListeners: 100,
+    });
+
     cron.schedule('* * * * *', () => {
-      events.emit('cron:minute');
+      this.emit(CronEvents.MINUTE);
     });
 
-    // - Hourly: 0 * * * * (runs every hour at the start of the hour, i.e. 1:00, 2:00, 3:00 etc.)
     cron.schedule('0 * * * *', () => {
-      events.emit('cron:hourly');
+      this.emit(CronEvents.HOURLY);
     });
 
-    // - Daily: 0 0 * * * (runs daily at 12:00 AM)
     cron.schedule('0 0 * * *', () => {
-      events.emit('cron:daily');
+      this.emit(CronEvents.DAILY);
     });
 
-    // - Weekly: 0 0 * * 0 (runs every Sunday at 12:00 AM)
     cron.schedule('0 0 * * 0', () => {
-      events.emit('cron:weekly');
+      this.emit(CronEvents.WEEKLY);
     });
 
-    // - Monthly: 0 0 1 * * (runs on the first day of every month at 12:00 AM)
     cron.schedule('0 0 1 * *', () => {
-      events.emit('cron:monthly');
+      this.emit(CronEvents.MONTHLY);
+    });
+
+    cron.schedule('0 0 1 1 *', () => {
+      this.emit(CronEvents.YEARLY);
+    });
+
+    cron.schedule('*/5 * * * *', () => {
+      this.emit(CronEvents.EVERY_5_MINUTES);
     });
   }
 }
 
-export default new CronModule();
+export default new Cron();

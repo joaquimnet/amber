@@ -17,5 +17,6 @@ module.exports = {
     complexity: ['error', 10],
     'max-nested-callbacks': ['error', 3],
     '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
 };

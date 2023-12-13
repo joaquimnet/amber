@@ -1,7 +1,18 @@
+import { logger } from './log';
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught exception:', error);
+  process.exit(1);
+});
+
 import './config';
 import './bot';
 import { connect } from './database';
-import { logger } from './log';
 
 const version = process.env['npm_package_version']!;
 const packageName = process.env['npm_package_name']!;
