@@ -93,7 +93,7 @@ class ConversationHandler {
     );
   }
 
-  private async endConversation(message: Message) {
+  async endConversation(message: Message) {
     const context = await this.getChat(message.author.id);
 
     await context.addMessages([
